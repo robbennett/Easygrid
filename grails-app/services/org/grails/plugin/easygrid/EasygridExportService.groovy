@@ -2,7 +2,9 @@ package org.grails.plugin.easygrid
 
 import groovy.util.logging.Slf4j
 import org.springframework.web.servlet.support.RequestContextUtils
-import static org.grails.plugin.easygrid.EasygridContextHolder.*
+import java.text.SimpleDateFormat
+import static org.grails.plugin.easygrid.EasygridContextHolder.getReguest
+import static org.grails.plugin.easygrid.EasygridContextHolder.getResponse
 
 /**
  * Standard export service
@@ -28,11 +30,11 @@ class EasygridExportService {
         log.debug("export ${data.size()}")
 
         if (format && format != "html") {
-
+            def datetime = new SimpleDateFormat("yyyyMMdd_kkmmss").format(new Date())
             def contentTypes = grailsApplication.config.grails.mime.types[format]
             assert contentTypes: "No content type declared for format: ${format}"
             response.contentType = String.isAssignableFrom(contentTypes.getClass()) ? contentTypes : contentTypes[0]
-            response.setHeader("Content-disposition", "attachment; filename=${gridConfig.export.export_title}.${extension}")
+            response.setHeader("Content-disposition", "attachment; filename=${gridConfig.export.export_title}."+datetime+".${extension}")
 
             // apply an additional filter on the data which is available in the grid
             if (gridConfig.export.exportFilter) {
